@@ -1,0 +1,11 @@
+<h1>Most Searched Terms from IP: <%= request.remote_ip %></h1>
+
+<%= button_to 'Back to messages', messages_path, method: :get %>
+
+<hr />
+
+<ul>
+  <% @search_terms.each do |search_term| %>
+    <li><%= search_term.term %> - <%= search_term.count %> times</li>
+  <% end %>
+</ul>

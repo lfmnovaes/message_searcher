@@ -1,0 +1,16 @@
+<style>
+  .message {
+    display: flex;
+    gap: 8px;
+    border: 1px solid black;
+    margin-bottom: 4px;
+    padding: 4px;
+  }
+</style>
+
+<% messages.each do |message| %>
+  <div class="message">
+    <%= message.content %>
+    <%= link_to "Show", message_path(message) %>
+  </div>
+<% end %>

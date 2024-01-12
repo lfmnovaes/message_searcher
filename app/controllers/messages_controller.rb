@@ -6,10 +6,19 @@ class MessagesController < ApplicationController
     if params[:search].present?
       @messages = Message.where('content LIKE ?', "%#{params[:search]}%")
       record_search_term(params[:search])
-      redirect_to messages_path
     else
       @messages = Message.all
     end
+  end
+
+  def fetch_messages
+    @messages = if params[:search].present?
+                  Message.where('content LIKE ?', "%#{params[:search]}%")
+                else
+                  Message.all
+                end
+
+    render partial: 'messages_list', locals: { messages: @messages }
   end
 
   # GET /messages/1 or /messages/1.json

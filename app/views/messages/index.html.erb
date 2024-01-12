@@ -1,18 +1,3 @@
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    var searchInput = document.getElementById("search_input");
-    var timeout = null;
-
-    searchInput.addEventListener("keyup", function() {
-      clearTimeout(timeout);
-
-      timeout = setTimeout(function() {
-        document.getElementById("search_form").submit();
-      }, 4000);
-    });
-  });
-</script>
-
 <p style="color: green"><%= notice %></p>
 
 <h1>Messages</h1>
@@ -21,14 +6,9 @@
 
 <hr />
 
-<%= form_tag messages_path, method: :get do %>
-  <%= text_field_tag :search, params[:search] %>
-  <%= submit_tag "Search" %>
-<% end %>
-
 <%= form_tag messages_path, method: :get, id: "search_form" do %>
   <%= text_field_tag :search, params[:search], id: "search_input" %>
-  <%= submit_tag "Search", style: "display: none;" %>
+  <%= submit_tag "Search" %>
 <% end %>
 
 <hr />
@@ -38,10 +18,32 @@
 <hr />
 
 <div id="messages">
-  <% @messages.each do |message| %>
-    <%= render message %>
-    <p>
-      <%= link_to "Show this message", message %>
-    </p>
-  <% end %>
+  <%= render partial: 'messages_list', locals: { messages: @messages } %>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById("search_input");
+    const textLength = searchInput.value.length;
+    let searchTimeout = null;
+
+    searchInput.focus();
+    searchInput.setSelectionRange(textLength, textLength);
+
+    searchInput.addEventListener("keyup", function() {
+      clearTimeout(searchTimeout);
+      fetchMessages(searchInput.value);
+      searchTimeout = setTimeout(function() {
+        document.getElementById("search_form").submit();
+      }, 2000);
+    });
+  });
+
+  function fetchMessages(query) {
+    fetch(`/messages/fetch_messages?search=${encodeURIComponent(query)}`)
+      .then(response => response.text())
+      .then(html => {
+      document.getElementById("messages").innerHTML = html;
+    });
+  }
+</script>

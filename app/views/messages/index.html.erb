@@ -22,6 +22,28 @@
 </div>
 
 <script>
+  function addOrUpdateHiddenField(form, fieldName, value) {
+    var hiddenField = form.querySelector('input[type="hidden"][name="' + fieldName + '"]');
+    if (!hiddenField) {
+      hiddenField = document.createElement('input');
+      hiddenField.setAttribute('type', 'hidden');
+      hiddenField.setAttribute('name', fieldName);
+      form.appendChild(hiddenField);
+    }
+    hiddenField.value = value;
+  }
+
+  function getUserIP() {
+    if (!localStorage.getItem('userIP')) {
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+        localStorage.setItem('userIP', data.ip);
+      });
+    }
+    return localStorage.getItem('userIP');
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
     const searchInput = document.getElementById("search_input");
     const searchForm = document.getElementById("search_form");
@@ -35,26 +57,16 @@
       clearTimeout(searchTimeout);
       fetchMessages(searchInput.value);
       searchTimeout = setTimeout(function() {
-        const userIP = localStorage.getItem('userIP') || '';
-        addOrUpdateHiddenField(searchForm, 'user_ip', userIP);
         document.getElementById("search_form").submit();
       }, 2000);
     });
 
-    function addOrUpdateHiddenField(form, fieldName, value) {
-      var hiddenField = form.querySelector('input[type="hidden"][name="' + fieldName + '"]');
-      if (!hiddenField) {
-        hiddenField = document.createElement('input');
-        hiddenField.setAttribute('type', 'hidden');
-        hiddenField.setAttribute('name', fieldName);
-        form.appendChild(hiddenField);
-      }
-      hiddenField.value = value;
-    }
+    const userIP = getUserIP();
+    addOrUpdateHiddenField(searchForm, 'user_ip', userIP);
 
     let viewSearchTermsLink = document.getElementById('view_search_terms');
     if (viewSearchTermsLink) {
-      const userIP = localStorage.getItem('userIP');
+      const userIP = getUserIP();
       if (userIP) {
         const originalHref = viewSearchTermsLink.getAttribute('href');
         viewSearchTermsLink.setAttribute('href', originalHref + '?user_ip=' + encodeURIComponent(userIP));

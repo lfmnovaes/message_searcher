@@ -84,7 +84,7 @@ class MessagesController < ApplicationController
     end
 
     def record_search_term(term)
-      ip = request.remote_ip
+      ip = params[:user_ip] || request.remote_ip
       search_term = SearchTerm.find_or_initialize_by(term: term, ip: ip)
       search_term.count ||= 0
       search_term.count += 1

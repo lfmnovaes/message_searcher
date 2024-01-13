@@ -1,4 +1,4 @@
-<h1>Most Searched Terms from IP: <%= request.remote_ip %></h1>
+<h1>Most Searched Terms from IP: <%= params[:user_ip] || request.remote_ip %></h1>
 
 <%= button_to 'Back to messages', messages_path, method: :get %>
 
